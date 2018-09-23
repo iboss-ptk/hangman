@@ -14,9 +14,7 @@ data class Result(
 )
 
 fun knownSecretWord(secretWord: String, letters: List<Char>) =
-    secretWord.fold("") { acc, curr ->
-        acc + if (letters.contains(curr)) curr else "_"
-    }
+    secretWord.map { if (letters.contains(it)) it else '_' }.joinToString("")
 
 
 fun reactiveHangman(secretWord: String, letters: Observable<Char>): Observable<Result> {

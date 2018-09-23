@@ -28,26 +28,40 @@ class HangmanTest: WordSpec({
             }
         }
 
-        "returns secretWord with unguessed letters masked with _" {
-            assertAll { secretWord: String, randomLetters: String ->
-                val guessed = secretWord
+        "returns string with same '_' count when adding more unmatched letters" {
+            assertAll { secretWord: String, randomLetters: String, moreRandomLetters: String ->
+                val correctGuessed = secretWord
                         .toList()
                         .shuffled()
                         .take((1..secretWord.length).random())
                         .joinToString("")
 
-                val mixedLetters = (guessed + noMatchLetters(secretWord, randomLetters)).toList().shuffled()
-                val expected = secretWord
-                        .map { if (guessed.contains(it)) it else '_' }
+                val mixedLetters = (correctGuessed + noMatchLetters(secretWord, randomLetters)).toList().shuffled()
+                val expected = knownSecretWord(
+                        secretWord, mixedLetters + noMatchLetters(secretWord, moreRandomLetters).toList()
+                ).count { it == '_'}
+
+                knownSecretWord(secretWord, mixedLetters).count { it == '_' } shouldBe expected
+            }
+        }
+
+        "returns string that contains all matched letters" {
+            assertAll { secretWord: String, randomLetters: String ->
+                val correctGuessed = secretWord
+                        .toList()
+                        .shuffled()
+                        .take((1..secretWord.length).random())
+                        .filter { it != '_' }
                         .joinToString("")
 
-                knownSecretWord(secretWord, mixedLetters) shouldBe expected
+                val mixedLetters = (correctGuessed + noMatchLetters(secretWord, randomLetters)).toList().shuffled()
+
+                knownSecretWord(secretWord, mixedLetters).filter { it != '_' }.toSet() shouldBe correctGuessed.toSet()
             }
         }
     }
 
     "Hangman.reactiveHangman" should {
-
         "เวลา t0: เกมเริ่ม - ผู้เล่นยังไม่ได้เลือกตัวอักษร - letterStream = […]" {
             val letters = listOf<Char>().toObservable()
             reactiveHangman("bigbear", letters)
