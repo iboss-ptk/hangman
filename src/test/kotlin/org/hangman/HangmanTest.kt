@@ -28,7 +28,7 @@ class HangmanTest: WordSpec({
             }
         }
 
-        "returns secretWord with unguessed letters masked with _ secretWord" {
+        "returns secretWord with unguessed letters masked with _" {
             assertAll { secretWord: String, randomLetters: String ->
                 val guessed = secretWord
                         .toList()
